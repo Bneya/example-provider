@@ -7,9 +7,10 @@ on:
   workflow_dispatch:
 
 env:
-  PACT_BROKER_BASE_URL: https://test.pactflow.io
-  PACT_BROKER_TOKEN: ${{ secrets.PACTFLOW_TOKEN_FOR_CI_CD_WORKSHOP }}
+  PACT_BROKER_BASE_URL: ${{ vars.PACT_BROKER_BASE_URL }}
   PACT_BROKER_PUBLISH_VERIFICATION_RESULTS: true
+  PACT_BROKER_USERNAME: ${{ vars.PACT_BROKER_USERNAME }}
+  PACT_BROKER_PASSWORD: ${{ secrets.PACT_BROKER_PASSWORD }}
   GIT_COMMIT: ${{ github.sha }}
   GITHUB_REF: ${{ github.ref }}
 
