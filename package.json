@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node server.js",
-    "test": "jest --testTimeout 30000 --testPathIgnorePatterns consumerChange.pact.test.js",
+    "test": "jest --testTimeout 30000 --testPathPattern=\\.provider\\.pact\\.test\\.js$",
     "test:pact": "jest --testTimeout 30000 --testMatch \"**/*.consumerChange.pact.test.js\""
   },
   "dependencies": {
