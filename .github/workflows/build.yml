@@ -35,7 +35,7 @@ jobs:
         run: yarn
 
       - name: Test
-        run: yarn test
+        run: make test
 
   # Runs on branches as well, so we know the status of our PRs
   can-i-deploy:
