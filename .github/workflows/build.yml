@@ -15,6 +15,7 @@ env:
   GIT_COMMIT: ${{ github.sha }}
   GIT_BRANCH: ${{ github.ref_name }}
   ENVIRONMENT: production
+  PROVIDERS: pactflow-example-provider
   PACT_CLI: docker run
     --rm -v ${PWD}:${PWD}
     -e PACT_BROKER_BASE_URL=${{ vars.PACT_BROKER_BASE_URL }}
@@ -47,7 +48,7 @@ jobs:
 
       - name: Can I deploy? (valida todos los providers)
         run: |
-          for provider in pactflow-example-provider
+          for provider in ${{  env.PROVIDERS }}
           do
             ${{ env.PACT_CLI }} broker can-i-deploy \
               --pacticipant $provider \
@@ -58,12 +59,19 @@ jobs:
           done
 
   # Only deploy from master
-  # deploy:
-  #   runs-on: ubuntu-latest
-  #   needs: can-i-deploy
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - run: docker pull pactfoundation/pact-cli:latest
-  #     - name: Deploy
-  #       run: GIT_BRANCH=${GITHUB_REF:11} make deploy
-  #       if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/test'
+  deploy:
+    runs-on: ubuntu-latest
+    needs: can-i-deploy
+    steps:
+      - uses: actions/checkout@v3
+      - run: docker pull pactfoundation/pact-cli:latest
+      - name: Deploy
+        run: |
+          for provider in ${{  env.PROVIDERS }}
+          do
+            ${{ env.PACT_CLI }} broker record_deployment \
+            --pacticipant $provider \
+            --version ${{ env.GIT_COMMIT }} \
+            --environment ${{ env.ENVIRONMENT }}
+          done
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/development'
