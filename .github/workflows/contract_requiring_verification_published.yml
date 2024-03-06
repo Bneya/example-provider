@@ -22,6 +22,7 @@ env:
   PACT_URL: ${{ github.event.client_payload.pact_url }}
   GIT_COMMIT: ${{ github.event.client_payload.sha }}
   GIT_BRANCH: ${{ github.event.client_payload.branch }}
+  CONSUMER_TARGET_BRANCH: ${{ github.event.client_payload.consumerBranch }}
   DESCRIPTION: ${{ github.event.client_payload.message }}
 
 jobs:
