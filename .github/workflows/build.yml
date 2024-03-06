@@ -16,7 +16,7 @@ env:
   # GITHUB_REF: ${{ github.ref }}
   PACT_BROKER_PUBLISH_VERIFICATION_RESULTS: true
   GIT_COMMIT: ${{ github.sha }}
-  GIT_BRANCH: ${{ github.ref_name }}
+  GIT_BRANCH: ${{ github.head_ref || github.ref_name }}
   ENVIRONMENT: production
   PROVIDERS: pactflow-example-provider
   PACT_CLI: docker run
