@@ -40,7 +40,7 @@ jobs:
           script: |
             const { data } = await github.rest.actions.listWorkflowRuns({
               owner: context.repo.owner,
-              repo: example-consumer, // context.repo.repo,
+              repo: 'example-consumer', // context.repo.repo,
               workflow_id: 'build.yml', // Asegúrate de usar el ID o nombre correcto de tu workflow
               status: 'in_progress'
             });
