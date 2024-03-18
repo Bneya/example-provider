@@ -50,7 +50,7 @@ jobs:
               core.setOutput('is_running', false);
             }
 
-      - name: Skip steps if A.yaml is running
+      - name: Skiping execution as consumer is running
         if: steps.check_consumer.outputs.is_running == 'true'
         run: echo "Consumer is running, skipping execution."
           
