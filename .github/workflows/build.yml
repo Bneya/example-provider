@@ -38,7 +38,7 @@ jobs:
         with:
           github-token: ${{ secrets.GH_PAT }}
           script: |
-            const { data } = await github.actions.listWorkflowRuns({
+            const { data } = await github.rest.actions.listWorkflowRuns({
               owner: context.repo.owner,
               repo: example-consumer, // context.repo.repo,
               workflow_id: 'build.yml', // Asegúrate de usar el ID o nombre correcto de tu workflow
