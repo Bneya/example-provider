@@ -49,6 +49,11 @@ jobs:
             } else {
               core.setOutput('is_running', false);
             }
+
+      - name: Skip steps if A.yaml is running
+        if: steps.check_consumer.outputs.is_running == 'true'
+        run: echo "Consumer is running, skipping execution."
+          
     
   test:
     if: needs.check-consumer-running.outputs.is_consumer_runing == 'false'
