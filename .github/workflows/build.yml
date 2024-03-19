@@ -32,38 +32,56 @@ env:
     pactfoundation/pact-cli:latest
 
 jobs:
-  check-consumer-running:
-    runs-on: ubuntu-latest
-    outputs:
-      is_consumer_runing: ${{ steps.check_consumer.outputs.is_running }}
-    steps:
-      - name: Check if consumer testing is running
-        id: check_consumer
-        uses: actions/github-script@v5
-        with:
-          github-token: ${{ secrets.GH_PAT }}
-          script: |
-            const { data } = await github.rest.actions.listWorkflowRuns({
-              owner: context.repo.owner,
-              repo: 'example-consumer', // context.repo.repo,
-              workflow_id: 'build.yml', // Asegúrate de usar el ID o nombre correcto de tu workflow
-              status: 'in_progress'
-            });
-            if(data.total_count > 0) {
-              core.setOutput('is_running', true);
-            } else {
-              core.setOutput('is_running', false);
-            }
+  # check-consumer-running:
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     is_consumer_runing: ${{ steps.check_consumer.outputs.is_running }}
+  #   steps:
+  #     - name: Check if consumer testing is running
+  #       id: check_consumer
+  #       uses: actions/github-script@v5
+  #       with:
+  #         github-token: ${{ secrets.GH_PAT }}
+  #         script: |
+  #           const { data } = await github.rest.actions.listWorkflowRuns({
+  #             owner: context.repo.owner,
+  #             repo: 'example-consumer', // context.repo.repo,
+  #             workflow_id: 'build.yml', // Asegúrate de usar el ID o nombre correcto de tu workflow
+  #             status: 'in_progress'
+  #           });
+  #           if(data.total_count > 0) {
+  #             core.setOutput('is_running', true);
+  #           } else {
+  #             core.setOutput('is_running', false);
+  #           }
 
-      - name: Skiping execution as consumer is running
-        if: steps.check_consumer.outputs.is_running == 'true'
-        run: echo "Consumer is running, skipping execution."
+  #     - name: Skiping execution as consumer is running
+  #       if: steps.check_consumer.outputs.is_running == 'true'
+  #       run: echo "Consumer is running, skipping execution."
+
+  check-consumer-modified:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Check for modifications in *.consumer.pact.spec.ts files
+        id: check_modifications
+        run: |
+          if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -q '.consumer.pact.spec.ts'; then
+            echo "::set-output name=consumer_files_modified::true"
+          else
+            echo "::set-output name=consumer_files_modified::false"
+          fi
+      - name: Abort if any *.consumer.pact.spec.ts was modified
+        if: steps.check_modifications.outputs.consumer_files_modified == 'true'
+        run: |
+          echo "*.consumer.yaml was modified, aborting workflow."
+          exit 1
           
     
   test:
-    if: needs.check-consumer-running.outputs.is_consumer_runing == 'false'
+    # if: needs.check-consumer-running.outputs.is_consumer_runing == 'false'
     runs-on: ubuntu-latest
-    needs: check-consumer-running
+    needs: check-consumer-modified
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
