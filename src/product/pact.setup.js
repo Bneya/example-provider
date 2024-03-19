@@ -31,7 +31,7 @@ const stateHandlers = {
       ["10", new Product("10", "CREDIT_CARD", "28 Degrees", "v1")],
     ]);
   },
-  "a product with ID 10 exists": () => {
+  "a product with ID 8 exists": () => {
     controller.repository.products = new Map([
       ["8", new Product("10", "CREDIT_CARD", "28 Degrees", "v1")],
     ]);

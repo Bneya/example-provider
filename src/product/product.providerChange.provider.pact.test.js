@@ -18,10 +18,10 @@ describe('Pact Verification', () => {
     }
   });
   it('validates the expectations of any consumers, by specified consumerVersionSelectors', () => {
-    if (process.env.PACT_URL) {
-      console.log('pact url specified, so this test should not run');
-      return;
-    }
+    // if (process.env.PACT_URL) {
+    //   console.log('pact url specified, so this test should not run');
+    //   return;
+    // }
     console.log({
       PACT_BROKER_BASE_URL: process.env.PACT_BROKER_BASE_URL
     })
@@ -30,14 +30,15 @@ describe('Pact Verification', () => {
     // https://docs.pact.io/pact_broker/advanced_topics/consumer_version_selectors
     const fetchPactsDynamicallyOpts = {
       provider: 'pactflow-example-provider',
-      consumerVersionSelectors: [
-        // { mainBranch: true },
-        // { deployed: true },
-        // { matchingBranch: true }
-        process.env.CONSUMER_TARGET_BRANCH
-          ? { branch: process.env.CONSUMER_TARGET_BRANCH }
-          : { environment: process.env.ENVIRONMENT, deployed: true }
-      ],
+      // consumerVersionSelectors: [
+      //   // { mainBranch: true },
+      //   // { deployed: true },
+      //   // { matchingBranch: true }
+      //   process.env.CONSUMER_TARGET_BRANCH
+      //     ? { branch: process.env.CONSUMER_TARGET_BRANCH }
+      //     : { environment: process.env.ENVIRONMENT, deployed: true }
+      // ],
+      pactUrls: [process.env.PACT_URL],
       pactBrokerUrl: process.env.PACT_BROKER_BASE_URL,
       // https://docs.pact.io/pact_broker/advanced_topics/pending_pacts
       enablePending: true,
