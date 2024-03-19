@@ -76,6 +76,7 @@ jobs:
           else
             echo "::set-output name=consumer_files_modified::false"
           fi
+          echo consumer-files_modified ::consumer-files_modified
       - name: Abort if any *.consumer.pact.spec.ts was modified
         if: steps.check_modifications.outputs.consumer_files_modified == 'true'
         run: |
