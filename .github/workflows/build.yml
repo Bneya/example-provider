@@ -66,6 +66,7 @@ jobs:
       - name: Check for modifications in *.consumer.pact.spec.ts files
         id: check_modifications
         run: |
+          git fetch origin ${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }}
           if git diff --name-only origin/${{ github.base_ref }} ${{ github.sha }} | grep -q '*.consumer.pact.spec.ts'; then
             echo "::set-output name=consumer_files_modified::true"
           else
