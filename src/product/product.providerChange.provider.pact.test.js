@@ -38,13 +38,23 @@ describe('Pact Verification', () => {
       //     ? { branch: process.env.CONSUMER_TARGET_BRANCH }
       //     : { environment: process.env.ENVIRONMENT, deployed: true }
       // ],
-      pactUrls: [process.env.PACT_URL],
+      // pactUrls: [process.env.PACT_URL],
       pactBrokerUrl: process.env.PACT_BROKER_BASE_URL,
       // https://docs.pact.io/pact_broker/advanced_topics/pending_pacts
       enablePending: true,
       // https://docs.pact.io/pact_broker/advanced_topics/wip_pacts
       includeWipPactsSince: '2020-01-01'
     };
+
+    if (process.env.PACT_URL) {
+      fetchPactsDynamicallyOpts['pactUrls'] = [process.env.PACT_URL]
+    } else {
+      fetchPactsDynamicallyOpts['consumerVersionSelectors'] = [
+        process.env.CONSUMER_TARGET_BRANCH
+          ? { branch: process.env.CONSUMER_TARGET_BRANCH }
+          : { environment: process.env.ENVIRONMENT, deployed: true }
+      ]
+    }
 
     const opts = {
       ...baseOpts,
