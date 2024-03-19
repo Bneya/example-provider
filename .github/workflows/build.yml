@@ -74,19 +74,12 @@ jobs:
         id: check_modifications
         run: |
           if git diff --name-only origin/${{ github.base_ref }}...origin/${{ github.head_ref }} | grep -q '.*\.consumer\.pact\.spec\.ts'; then
-            echo "::set-output name=consumer_files_modified::true"
+            echo "consumer_files_modified=true" >> $GITHUB_OUTPUT
             echo "consumer files were modified. Aborting"
           else
-            echo "::set-output name=consumer_files_modified::false"
+            echo "consumer_files_modified=false" >> $GITHUB_OUTPUT
             echo "consumer not modified"
-          fi
-          echo consumer_files_modified ::consumer_files_modified
-      # - name: Abort if any *.consumer.pact.spec.ts was modified
-      #   if: steps.check_modifications.outputs.consumer_files_modified == 'true'
-      #   run: |
-      #     echo "*.consumer.yaml was modified, aborting workflow."
-      #     exit 1
-          
+          fi          
     
   test:
     if: needs.check-consumer-modified.outputs.consumer_files_modified == 'false'
