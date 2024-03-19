@@ -12,6 +12,7 @@ on:
 # To be able to cancel the provider run if the consumer runs
 concurrency:
   group: pact-testing
+  cancel-in-progress: true
 
 env:
   PACT_BROKER_BASE_URL: ${{ vars.PACT_BROKER_BASE_URL }}
