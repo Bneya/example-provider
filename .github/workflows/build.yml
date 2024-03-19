@@ -9,11 +9,6 @@ on:
   workflow_dispatch:
   pull_request:
 
-# To be able to cancel the provider run if the consumer runs
-concurrency:
-  group: pact-testing
-  cancel-in-progress: true
-
 env:
   PACT_BROKER_BASE_URL: ${{ vars.PACT_BROKER_BASE_URL }}
   PACT_BROKER_USERNAME: ${{ vars.PACT_BROKER_USERNAME }}
@@ -32,33 +27,6 @@ env:
     pactfoundation/pact-cli:latest
 
 jobs:
-  # check-consumer-running:
-  #   runs-on: ubuntu-latest
-  #   outputs:
-  #     is_consumer_runing: ${{ steps.check_consumer.outputs.is_running }}
-  #   steps:
-  #     - name: Check if consumer testing is running
-  #       id: check_consumer
-  #       uses: actions/github-script@v5
-  #       with:
-  #         github-token: ${{ secrets.GH_PAT }}
-  #         script: |
-  #           const { data } = await github.rest.actions.listWorkflowRuns({
-  #             owner: context.repo.owner,
-  #             repo: 'example-consumer', // context.repo.repo,
-  #             workflow_id: 'build.yml', // Asegúrate de usar el ID o nombre correcto de tu workflow
-  #             status: 'in_progress'
-  #           });
-  #           if(data.total_count > 0) {
-  #             core.setOutput('is_running', true);
-  #           } else {
-  #             core.setOutput('is_running', false);
-  #           }
-
-  #     - name: Skiping execution as consumer is running
-  #       if: steps.check_consumer.outputs.is_running == 'true'
-  #       run: echo "Consumer is running, skipping execution."
-
   check-consumer-modified:
     runs-on: ubuntu-latest
     outputs:
@@ -67,13 +35,21 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: Fetch branches
-        run: |
-          git fetch origin +refs/heads/*:refs/remotes/origin/* 
+        
+      - name: Fetch branches if PR
+        if: github.event_name == 'pull_request'
+        run: git fetch origin +refs/heads/*:refs/remotes/origin/*
+
+      # Comparamos modificaciones para caso PR y para push
       - name: Check for modifications in *.consumer.pact.spec.ts files
         id: check_modifications
         run: |
-          if git diff --name-only origin/${{ github.base_ref }}...origin/${{ github.head_ref }} | grep -q '.*\.consumer\.pact\.spec\.ts'; then
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            DIFF_BASE="origin/${{ github.base_ref }}...origin/${{ github.head_ref }}"
+          else
+            DIFF_BASE="${{ github.event.before }}...${{ github.sha }}"
+          fi
+          if git diff --name-only $DIFF_BASE | grep -q '.*\.consumer\.pact\.spec\.ts'; then
             echo "consumer_files_modified=true" >> $GITHUB_OUTPUT
             echo "consumer files were modified. Aborting"
           else
