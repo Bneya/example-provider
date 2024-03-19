@@ -31,9 +31,12 @@ describe('Pact Verification', () => {
     const fetchPactsDynamicallyOpts = {
       provider: 'pactflow-example-provider',
       consumerVersionSelectors: [
-        { mainBranch: true },
-        { deployed: true },
-        { matchingBranch: true }
+        // { mainBranch: true },
+        // { deployed: true },
+        // { matchingBranch: true }
+        process.env.CONSUMER_TARGET_BRANCH
+          ? { branch: process.env.CONSUMER_TARGET_BRANCH }
+          : { environment: process.env.ENVIRONMENT, deployed: true }
       ],
       pactBrokerUrl: process.env.PACT_BROKER_BASE_URL,
       // https://docs.pact.io/pact_broker/advanced_topics/pending_pacts
