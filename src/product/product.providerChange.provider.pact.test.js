@@ -63,7 +63,8 @@ describe('Pact Verification', () => {
       // branch: process.env.CONSUMER_TARGET_BRANCH
       branch: 'master',  // hardcodeado para probar
       enablePending: true,
-      includeWipPactsSince: '2024-04-01'
+      includeWipPactsSince: '2024-04-01',
+      provider: 'pactflow-example-provider',
     }
 
     const opts = {
