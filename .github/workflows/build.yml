@@ -54,7 +54,7 @@ jobs:
             echo "consumer files were modified. Aborting"
           else
             echo "consumer_files_modified=false" >> $GITHUB_OUTPUT
-            echo "consumer not modified"
+            echo "consumer not modified. Continuing"
           fi          
     
   test:
