@@ -67,6 +67,7 @@ describe('Pact Verification', () => {
       provider: 'pactflow-example-provider',
     }
 
+
     const opts = {
       ...baseOpts,
       ...fetchPactsDynamicallyOpts,
